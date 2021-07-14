@@ -12,6 +12,8 @@ namespace UserDetailsClient
 {
     public partial class MainPage : ContentPage
     {
+        public string Token { get; set; }
+
         public MainPage()
         {
             InitializeComponent();
@@ -35,9 +37,10 @@ namespace UserDetailsClient
                     catch (MsalUiRequiredException)
                     {
                         try
-                        { 
+                        {
                             var builder = App.PCA.AcquireTokenInteractive(App.Scopes)
-                                                                       .WithParentActivityOrWindow(App.ParentWindow);
+                                .WithAuthority($"https://login.microsoftonline.com/{App.TenantID}")
+                                .WithParentActivityOrWindow(App.ParentWindow);
 
                             if (Device.RuntimePlatform != "UWP")
                             {
@@ -61,8 +64,16 @@ namespace UserDetailsClient
 
                     if (authResult != null)
                     {
-                        var content = await GetHttpContentWithTokenAsync(authResult.AccessToken);
-                        UpdateUserContent(content);
+                        Token = authResult.AccessToken;
+
+                        //var content = await GetHttpContentWithTokenAsync(authResult.AccessToken);
+                        //UpdateUserContent(content);
+
+                        Device.BeginInvokeOnMainThread(() =>
+                        {
+                            slUser.IsVisible = true;
+                            btnSignInSignOut.Text = "Sign out";
+                        });
                     }
                 }
                 else
@@ -124,6 +135,36 @@ namespace UserDetailsClient
             {
                 await DisplayAlert("API call to graph failed: ", ex.Message, "Dismiss").ConfigureAwait(false);
                 return ex.ToString();
+            }
+        }
+
+        private async void CallApi_Clicked(object sender, EventArgs e)
+        {
+            try
+            {
+                //get data from API
+                HttpClient client = new HttpClient();
+                HttpRequestMessage message = new HttpRequestMessage(HttpMethod.Get, $"{App.MeterRequestEndpoint}/values");
+                message.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+                HttpResponseMessage response = await client.SendAsync(message).ConfigureAwait(false);
+                string responseString1 = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+                HttpRequestMessage message2 = new HttpRequestMessage(HttpMethod.Get, $"{App.MeterRequestEndpoint}/MeterMasterRequests");
+                message2.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+                HttpResponseMessage response2 = await client.SendAsync(message2).ConfigureAwait(false);
+                string responseString2 = await response2.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+                Device.BeginInvokeOnMainThread(() =>
+                {
+                    Endpoint.Text = $"{App.MeterRequestEndpoint}/values";
+                    Endpoint2.Text = $"{App.MeterRequestEndpoint}/MeterMasterRequests";
+                    ApiResults.Text = responseString1;
+                    ApiResults2.Text = responseString2;
+                });
+            }
+            catch (Exception ex)
+            {
+                //await DisplayAlert("API call failed: ", ex.Message, "Dismiss").ConfigureAwait(false);
             }
         }
     }

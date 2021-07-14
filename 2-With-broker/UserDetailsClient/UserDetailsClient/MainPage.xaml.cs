@@ -129,6 +129,7 @@ namespace UserDetailsClient
                         {
                             authResult = await App.PCA.AcquireTokenInteractive(App.Scopes)
                                                       .WithParentActivityOrWindow(App.ParentWindow)
+                                                      .WithAuthority($"https://login.microsoftonline.com/{App.TenantID}")
                                                       .WithUseEmbeddedWebView(true)
                                                       .ExecuteAsync();
                         }
@@ -140,6 +141,8 @@ namespace UserDetailsClient
 
                     if (authResult != null)
                     {
+                        Token = authResult.AccessToken;
+
                         var content = await GetHttpContentWithTokenAsync(authResult.AccessToken);
                         UpdateUserContent(content);
                         Device.BeginInvokeOnMainThread(() => { btnSignInSignOut.Text = "Sign out"; });
@@ -160,6 +163,31 @@ namespace UserDetailsClient
             catch (Exception ex)
             {
                 await DisplayAlert("Authentication failed. See exception message for details: ", ex.Message, "Dismiss");
+            }
+        }
+
+        public string Token { get; set; }
+
+        private async void CallApi_Clicked(object sender, EventArgs e)
+        {
+            try
+            {
+                var valuesPoint = $"{App.MeterRequestEndpoint}/values";
+                //get data from API
+                HttpClient client = new HttpClient();
+                HttpRequestMessage message = new HttpRequestMessage(HttpMethod.Get, valuesPoint);
+                message.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+                HttpResponseMessage response = await client.SendAsync(message).ConfigureAwait(false);
+                string responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+                Device.BeginInvokeOnMainThread(() =>
+                {
+                    ApiResults.Text = responseString;
+                });
+            }
+            catch (Exception ex)
+            {
+                //await DisplayAlert("API call failed: ", ex.Message, "Dismiss").ConfigureAwait(false);
             }
         }
     }

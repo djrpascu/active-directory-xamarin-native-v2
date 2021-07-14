@@ -40,6 +40,17 @@
                            FontAttributes="Bold" />
                     <Label x:Name="lblUserPrincipalName" />
                 </StackLayout>
+                <Label x:Name="Endpoint" />
+                <Label x:Name="Endpoint2" />
+                <Button x:Name="CallApi" Text="Call API" Clicked="CallApi_Clicked" />
+                <ScrollView>
+                    <Editor x:Name="ApiResults" Text="Click Call API..." AutoSize="TextChanges" />
+                </ScrollView>
+                <ScrollView>
+                    <Editor x:Name="ApiResults2" Text="Click Call API..." AutoSize="TextChanges" />
+                </ScrollView>
+
+
             </StackLayout>
             <BoxView Color="Transparent"
                      VerticalOptions="FillAndExpand"

@@ -28,6 +28,10 @@
                     <Label Text="UserPrincipalName " FontAttributes="Bold" />
                     <Label x:Name="lblUserPrincipalName" />
                 </StackLayout>
+                <Button x:Name="CallApi" Text="Call API" Clicked="CallApi_Clicked" />
+                <ScrollView>
+                    <Editor x:Name="ApiResults" Text="Getting data..." AutoSize="TextChanges" />
+                </ScrollView>
             </StackLayout>
             <BoxView Color="Transparent" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" />
             <Button x:Name="btnSignInSignOut" Text="Sign in" Clicked="OnSignInSignOut" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>

@@ -12,9 +12,12 @@ namespace UserDetailsClient
         /// The ClientID is the Application ID found in the portal (https://go.microsoft.com/fwlink/?linkid=2083908). 
         /// You can use the below id however if you create an app of your own you should replace the value here.
         /// </summary>
-        public static string ClientID = "4a1aa1d5-c567-49d0-ad0b-cd957a47f842"; //msidentity-samples-testing tenant
+        public static string ClientID = "a0e1b51f-2ef9-4cff-b0c1-22d7e8c99209"; //msidentity-samples-testing tenant
+        public static string TenantID = "da610562-359f-4ebe-9eb2-5b307090e8d2";
+        public static string MeterRequestEndpoint = "https://testmeterrequest-hawaiianelectric.msappproxy.net/MeterRequestAPI/api";
 
-        public static string[] Scopes = { "User.Read" };
+        //public static string[] Scopes = { "https://testmeterrequest-hawaiianelectric.msappproxy.net/MeterRequestAPI/api//user_impersonation" };
+        public static string[] Scopes = { "User.Read", "https://testmeterrequest-hawaiianelectric.msappproxy.net/MeterRequestAPI/api//user_impersonation" };
         public static string Username = string.Empty;
 
         public static object ParentWindow { get; set; }
